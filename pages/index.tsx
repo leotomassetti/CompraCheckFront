@@ -1,23 +1,27 @@
 import { useEffect, useState } from "react";
+import CookieConsent from "../components/CookieConsent";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "../components/ui/accordion";
 
 export default function Home() {
   const [inputUrl, setInputUrl] = useState("");
   const [result, setResult] = useState<any | null>(null);
   const [loading, setLoading] = useState(false);
   const [darkMode, setDarkMode] = useState(true);
-  const [showCookiePopup, setShowCookiePopup] = useState(false);
 
-  useEffect(() => {
-    const accepted = localStorage.getItem("cookiesAccepted");
-    if (!accepted) {
-      setShowCookiePopup(true);
-    }
-  }, []);
-
-  const acceptCookies = () => {
-    localStorage.setItem("cookiesAccepted", "true");
-    setShowCookiePopup(false);
-  };
+  const tips = [
+    "Desconfie de preços muito abaixo do mercado.",
+    "Prefira pagar com cartão de crédito ou intermediadores.",
+    "Confira se há política de troca, privacidade e canais de contato.",
+    "Desconfie de erros de português ou layout genérico.",
+    "Nunca compartilhe seus dados pessoais via WhatsApp ou e-mail não verificados.",
+    "Essa loja vende via marketplaces conhecidos (como Mercado Livre ou Amazon), considere comprar por lá.",
+    "E é claro, sempre use o Compra Check!!!",
+  ];
 
   useEffect(() => {
     document.body.style.backgroundColor = darkMode ? "#111" : "#fff";
@@ -25,11 +29,17 @@ export default function Home() {
   }, [darkMode]);
 
   const handleCheck = async () => {
+    const consent = JSON.parse(localStorage.getItem("cookiesAccepted") || "{}");
+    if (consent.history) {
+      localStorage.setItem("lastChecked", inputUrl);
+    }
+
     setLoading(true);
     setResult(null);
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api/check";
+      const apiUrl =
+        process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/check";
       const res = await fetch(`${apiUrl}?url=${encodeURIComponent(inputUrl)}`);
       const data = await res.json();
       setResult(data);
@@ -56,17 +66,36 @@ export default function Home() {
         <img
           src="/logoheader.png"
           alt="CompraCheck Header Logo"
-          style={{ height: "100px" }}
+          style={{ height: "43px" }}
         />
-        <label style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-          <span style={{ fontSize: "0.9rem" }}>🌙</span>
-          <input
-            type="checkbox"
-            checked={darkMode}
-            onChange={() => setDarkMode(!darkMode)}
-            style={{ width: "40px", height: "20px" }}
-          />
-        </label>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <span style={{ fontSize: "1rem" }}></span>
+          <div
+            onClick={() => setDarkMode(!darkMode)}
+            style={{
+              width: "45px",
+              height: "22px",
+              backgroundColor: darkMode ? "#4B5563" : "#FBBF24",
+              borderRadius: "9999px",
+              padding: "2px",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              transition: "background-color 0.3s ease",
+            }}
+          >
+            <div
+              style={{
+                width: "20px",
+                height: "20px",
+                backgroundColor: "#fff",
+                borderRadius: "9999px",
+                transition: "transform 0.3s ease",
+                transform: darkMode ? "translateX(24px)" : "translateX(0px)",
+              }}
+            />
+          </div>
+        </div>
       </header>
 
       <div
@@ -91,13 +120,35 @@ export default function Home() {
           de confiança. Melhor prevenir do que cair em furada!
         </p>
 
+        <div className="my-6">
+          <Accordion type="single" collapsible>
+            <AccordionItem value="dicas">
+              <AccordionTrigger>
+                Dicas para comprar com segurança
+              </AccordionTrigger>
+              <AccordionContent className="px-4 pt-2 pb-4">
+                <ul className="list-disc ml-5 space-y-2">
+                  {tips.map((tip, i) => (
+                    <li key={i}>{tip}</li>
+                  ))}
+                </ul>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </div>
+
         <input
           type="text"
           value={inputUrl}
           onChange={(e) => setInputUrl(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleCheck()}
           placeholder="Cole o link aqui"
-          style={{ width: "100%", padding: "0.5rem", fontSize: "1rem" }}
+          style={{
+            width: "100%",
+            padding: "0.5rem",
+            fontSize: "1rem",
+            marginTop: "2rem",
+          }}
         />
         <button
           onClick={handleCheck}
@@ -112,18 +163,79 @@ export default function Home() {
           Check!
         </button>
 
-        {loading && <p style={{ marginTop: "1rem" }}>🔄 Analisando...</p>}
+        {loading && (
+          <div style={{ marginTop: "1rem" }}>
+            <div
+              style={{
+                height: "4px",
+                width: "100%",
+                background:
+                  "linear-gradient(90deg, #3b82f6 30%, #60a5fa 60%, #3b82f6 90%)",
+                backgroundSize: "200% auto",
+                animation: "loadingBar 1.5s linear infinite",
+                borderRadius: "4px",
+              }}
+            />
+            <p style={{ marginTop: "0.5rem" }}>Analisando...</p>
+          </div>
+        )}
 
         {result && (
           <div style={{ marginTop: "2rem" }}>
-            <h2>Resultado</h2>
-            <p>
-              <strong>Status:</strong> {result.status}
-            </p>
-            <p>
-              <strong>Score:</strong> {result.score}/100
-            </p>
-            <ul>
+            <h1 style={{ textAlign: "center" }}>Resultado</h1>
+
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                marginTop: "2rem",
+              }}
+            >
+              <div
+                style={{
+                  width: "160px",
+                  height: "160px",
+                  backgroundColor: "#1f2937",
+                  borderRadius: "1rem",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  border: "3px solid #4b5563",
+                  boxShadow: "0 0 15px rgba(255, 255, 255, 0.1)",
+                  animation: "pulseGlow 2s infinite",
+                }}
+              >
+                <div
+                  style={{
+                    width: "130px",
+                    height: "130px",
+                    borderRadius: "50%",
+                    backgroundColor:
+                      result.score <= 40
+                        ? "#dc2626"
+                        : result.score < 70
+                        ? "#facc15"
+                        : "#16a34a",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    color: "#fff",
+                    fontWeight: "bold",
+                    fontSize: "1rem",
+                    textTransform: "uppercase",
+                    textAlign: "center",
+                  }}
+                >
+                  {result.score <= 40
+                    ? "CUIDADO"
+                    : result.score < 70
+                    ? "SUSPEITO"
+                    : "CONFIÁVEL"}
+                </div>
+              </div>
+            </div>
+
+            <ul style={{ marginTop: "1.5rem" }}>
               {result.cnpj && (
                 <li>
                   <strong>CNPJ:</strong> {result.cnpj}
@@ -149,8 +261,8 @@ export default function Home() {
 
             {result.socialLinks && result.socialLinks.length > 0 && (
               <div style={{ marginTop: "1rem" }}>
-                <h3>🔗 Redes sociais encontradas</h3>
                 <ul>
+                  <strong>Redes sociais encontradas</strong>
                   {result.socialLinks.map((link: string, i: number) => (
                     <li key={i}>
                       <a href={link} target="_blank" rel="noopener noreferrer">
@@ -164,6 +276,8 @@ export default function Home() {
           </div>
         )}
 
+        <div style={{ height: "150px" }} />
+
         <footer
           style={{
             textAlign: "center",
@@ -176,39 +290,30 @@ export default function Home() {
         </footer>
       </div>
 
-      {showCookiePopup && (
-        <div
-          style={{
-            position: "fixed",
-            bottom: "0",
-            width: "100%",
-            backgroundColor: darkMode ? "#333" : "#f2f2f2",
-            color: darkMode ? "#fff" : "#000",
-            padding: "1rem",
-            boxShadow: "0 -2px 6px rgba(0,0,0,0.2)",
-            textAlign: "center",
-            zIndex: 1000,
-          }}
-        >
-          <p style={{ marginBottom: "0.5rem" }}>
-            Usamos cookies para melhorar sua experiência. Ao continuar, você
-            concorda com nossa política de cookies.
-          </p>
-          <button
-            onClick={acceptCookies}
-            style={{
-              padding: "0.5rem 1rem",
-              backgroundColor: "#0070f3",
-              color: "#fff",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-            }}
-          >
-            Aceitar
-          </button>
-        </div>
-      )}
+      <CookieConsent />
+
+      <style jsx global>{`
+        @keyframes loadingBar {
+          0% {
+            background-position: 200% 0;
+          }
+          100% {
+            background-position: -200% 0;
+          }
+        }
+
+        @keyframes pulseGlow {
+          0% {
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+          }
+          50% {
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.4);
+          }
+          100% {
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+          }
+        }
+      `}</style>
     </>
   );
 }
