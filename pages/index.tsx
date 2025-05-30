@@ -131,21 +131,38 @@ export default function Home() {
           de confiança. Melhor prevenir do que cair em furada!
         </p>
 
-        <div className="my-6">
-          <Accordion type="single" collapsible>
-            <AccordionItem value="dicas">
-              <AccordionTrigger>
-                Dicas para comprar com segurança
-              </AccordionTrigger>
-              <AccordionContent className="px-4 pt-2 pb-4">
-                <ul className="list-disc ml-5 space-y-2">
-                  {tips.map((tip, i) => (
-                    <li key={i}>{tip}</li>
-                  ))}
-                </ul>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
+        <div
+          className="my-6"
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            textAlign: "center",
+          }}
+        >
+          <div style={{ maxWidth: "500px", width: "100%" }}>
+            <Accordion type="single" collapsible>
+              <AccordionItem value="dicas">
+                <AccordionTrigger className="w-full justify-left text-center">
+                  Dicas para comprar com segurança
+                </AccordionTrigger>
+                <AccordionContent style={{ padding: "1rem" }}>
+                  <ul
+                    style={{
+                      listStyle: "disc",
+                      marginLeft: "1.5rem",
+                      textAlign: "left",
+                    }}
+                  >
+                    {tips.map((tip, i) => (
+                      <li key={i} style={{ marginBottom: "0.5rem" }}>
+                        {tip}
+                      </li>
+                    ))}
+                  </ul>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
         </div>
 
         <input
@@ -153,7 +170,7 @@ export default function Home() {
           value={inputUrl}
           onChange={(e) => setInputUrl(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleCheck()}
-          placeholder="Cole o link aqui"
+          placeholder="Cole o link do produto/loja aqui"
           style={{
             width: "100%",
             padding: "1rem",
