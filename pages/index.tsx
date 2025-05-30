@@ -211,12 +211,13 @@ export default function Home() {
 
         {result && (
           <div style={{ marginTop: "2rem" }}>
-            <h3 style={{ textAlign: "center" }}>Resultado:</h3>
+            <h1 style={{ textAlign: "center" }}>Resultado</h1>
+
             <div
               style={{
                 display: "flex",
                 justifyContent: "center",
-                marginBottom: "2rem",
+                marginTop: "1rem",
               }}
             >
               <div
@@ -235,24 +236,45 @@ export default function Home() {
               >
                 <div
                   style={{
-                    width: "80%",
-                    height: "80%",
+                    width: "130px",
+                    height: "130px",
                     borderRadius: "50%",
-                    backgroundColor:
+                    background:
                       result.score <= 40
-                        ? "#dc2626"
+                        ? `
+                          radial-gradient(circle at center, rgba(255, 0, 0, 0.9) 0%, #7f1d1d 80%),
+                          repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.05) 0px, rgba(255, 255, 255, 0.05) 2px, transparent 2px, transparent 4px)
+                        `
                         : result.score < 70
-                        ? "#facc15"
-                        : "#16a34a",
+                        ? `
+                          radial-gradient(circle at center, rgba(255, 255, 0, 0.85) 0%, #92400e 80%),
+                          repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.06) 0px, rgba(255, 255, 255, 0.06) 2px, transparent 2px, transparent 4px)
+                        `
+                        : `
+                          radial-gradient(circle at center, rgba(34, 197, 94, 0.9) 0%, #064e3b 80%),
+                          repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.06) 0px, rgba(255, 255, 255, 0.06) 2px, transparent 2px, transparent 4px)
+                        `,
+                    border:
+                      result.score <= 40
+                        ? "3px solid #4b0000"
+                        : result.score < 70
+                        ? "3px solid #92400e"
+                        : "3px solid #064e3b",
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
                     color: "#fff",
                     fontWeight: "bold",
-                    fontSize: "1rem",
+                    fontSize: "0.9rem",
                     textTransform: "uppercase",
                     textAlign: "center",
-                    padding: "0.5rem",
+                    boxShadow:
+                      result.score <= 40
+                        ? "0 0 30px rgba(255, 0, 0, 0.6)"
+                        : result.score < 70
+                        ? "0 0 30px rgba(255, 230, 0, 0.5)"
+                        : "0 0 30px rgba(34, 197, 94, 0.5)",
+                    animation: "pulse-glow 2s infinite ease-in-out",
                   }}
                 >
                   {result.score <= 40
