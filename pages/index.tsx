@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Head from "next/head";
 import CookieConsent from "../components/CookieConsent";
 import {
   Accordion,
@@ -54,6 +55,11 @@ export default function Home() {
 
   return (
     <>
+      <Head>
+        <title>CompraCheck</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </Head>
+
       <header
         style={{
           display: "flex",
@@ -61,15 +67,15 @@ export default function Home() {
           alignItems: "center",
           padding: "1rem",
           marginBottom: "2rem",
+          flexWrap: "wrap",
         }}
       >
         <img
           src="/logoheader.png"
           alt="CompraCheck Header Logo"
-          style={{ height: "43px" }}
+          style={{ height: "43px", maxWidth: "100%", marginBottom: "0.5rem" }}
         />
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <span style={{ fontSize: "1rem" }}></span>
           <div
             onClick={() => setDarkMode(!darkMode)}
             style={{
@@ -100,7 +106,7 @@ export default function Home() {
 
       <div
         style={{
-          maxWidth: 600,
+          maxWidth: "clamp(100%, 90vw, 600px)",
           margin: "2rem auto",
           padding: "1rem",
           fontFamily: "sans-serif",
@@ -110,7 +116,12 @@ export default function Home() {
         <img
           src="/logo.png"
           alt="Logo CompraCheck"
-          style={{ display: "block", margin: "0 auto 1rem", width: "300px" }}
+          style={{
+            display: "block",
+            margin: "0 auto 1rem",
+            width: "100%",
+            maxWidth: "300px",
+          }}
         />
 
         <p
@@ -145,22 +156,40 @@ export default function Home() {
           placeholder="Cole o link aqui"
           style={{
             width: "100%",
-            padding: "0.5rem",
+            padding: "1rem",
             fontSize: "1rem",
             marginTop: "2rem",
+            borderRadius: "12px",
+            border: "1px solid #ccc",
+            boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+            outline: "none",
+            backgroundColor: "#fff",
+            color: "#000",
+            boxSizing: "border-box",
           }}
         />
+
         <button
           onClick={handleCheck}
           style={{
-            marginTop: "1rem",
-            padding: "0.5rem 1rem",
+            marginTop: "1.5rem",
+            padding: "1rem",
+            width: "50%",
+            fontSize: "1.1rem",
+            fontWeight: "bold",
+            color: "#fff",
+            backgroundColor: "#374151",
+            border: "none",
+            borderRadius: "9999px",
+            boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
+            cursor: "pointer",
+            transition: "background-color 0.3s",
             display: "block",
             marginLeft: "auto",
             marginRight: "auto",
           }}
         >
-          Check!
+          Checar!
         </button>
 
         {loading && (
@@ -182,33 +211,32 @@ export default function Home() {
 
         {result && (
           <div style={{ marginTop: "2rem" }}>
-            <h1 style={{ textAlign: "center" }}>Resultado</h1>
-
+            <h3 style={{ textAlign: "center" }}>Resultado:</h3>
             <div
               style={{
                 display: "flex",
                 justifyContent: "center",
-                marginTop: "2rem",
+                marginBottom: "2rem",
               }}
             >
               <div
                 style={{
-                  width: "160px",
-                  height: "160px",
+                  width: "clamp(120px, 35vw, 160px)",
+                  height: "clamp(120px, 35vw, 160px)",
                   backgroundColor: "#1f2937",
+                  border: "3px solid #444",
                   borderRadius: "1rem",
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
-                  border: "3px solid #4b5563",
-                  boxShadow: "0 0 15px rgba(255, 255, 255, 0.1)",
-                  animation: "pulseGlow 2s infinite",
+                  boxShadow: "0 0 15px rgba(255,255,255,0.1)",
+                  animation: "pulse-glow 2s infinite ease-in-out",
                 }}
               >
                 <div
                   style={{
-                    width: "130px",
-                    height: "130px",
+                    width: "80%",
+                    height: "80%",
                     borderRadius: "50%",
                     backgroundColor:
                       result.score <= 40
@@ -224,6 +252,7 @@ export default function Home() {
                     fontSize: "1rem",
                     textTransform: "uppercase",
                     textAlign: "center",
+                    padding: "0.5rem",
                   }}
                 >
                   {result.score <= 40
@@ -254,7 +283,7 @@ export default function Home() {
                   </li>
                 </>
               )}
-              {result.reason.map((r: string, i: number) => (
+              {(result.reason || []).map((r: string, i: number) => (
                 <li key={i}>{r}</li>
               ))}
             </ul>
@@ -302,15 +331,13 @@ export default function Home() {
           }
         }
 
-        @keyframes pulseGlow {
-          0% {
+        @keyframes pulse-glow {
+          0%,
+          100% {
             box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
           }
           50% {
-            box-shadow: 0 0 25px rgba(255, 255, 255, 0.4);
-          }
-          100% {
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.25);
           }
         }
       `}</style>
